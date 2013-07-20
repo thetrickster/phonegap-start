@@ -4,6 +4,7 @@ var app = (function() {
 
   function init() {
     document.addEventListener('deviceready', function() {
+    }, false);
       // FirebaseSimpleLogin demo instantiation
       var firebaseRef = new Firebase('https://fictionary.firebaseio.com');
       auth = new FirebaseSimpleLogin(firebaseRef, function(error, user) {
@@ -24,7 +25,6 @@ var app = (function() {
           // user is logged out
         }
       });
-    }, false);
   }
 
   function login(provider) {
