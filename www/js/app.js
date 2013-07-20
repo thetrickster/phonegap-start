@@ -16,10 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+var auth;
+
 var app = {
+
     // Application Constructor
     initialize: function() {
         this.bindEvents();
+
+        return {
+          init: app.inititialize,
+          login: app.login
+        }
+
+
     },
     // Bind Event Listeners
     //
@@ -34,6 +44,7 @@ var app = {
     // function, we must explicity call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
+
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -45,5 +56,44 @@ var app = {
         receivedElement.setAttribute('style', 'display:block;');
 
         console.log('Received Event: ' + id);
+    },
+    initFirebase: function() {
+        var fictionaryRef = new Firebase('https://fictionary.firebaseIO.com');
+
+        // Auth
+        auth = new FirebaseSimpleLogin(fictionaryRef, function(error, user) {
+            if (error) {
+              // an error occurred while attempting login
+              var message = 'An error occurred.';
+              navigator.notification.alert(message, function(){}, 'Failure!', 'Close');
+
+            } else if (user) {
+              // user authenticated with Firebase
+              var message = 'User ID: ' + user.id + ', Provider: ' + user.provider;
+              navigator.notification.alert(message, function(){}, 'Success!', 'Close');
+
+              // Log out so we can log in again with a different provider.
+              auth.logout();
+
+            } else {
+              // user is logged out
+            }
+
+        });            
+        // End Auth
+
+    },
+    login: function(provider) {
+
+        if (auth) {
+          if (provider === "facebook") {
+            auth.login(provider, {
+                rememberMe: true,
+                scope: 'email,user_likes'
+            });
+          }
+          auth.login(provider);  
+        }
     }
+
 };
